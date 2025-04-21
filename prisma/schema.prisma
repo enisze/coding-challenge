@@ -15,22 +15,27 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  password      String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  emailVerified Boolean
-  image         String?
-  sessions      Session[]
-  accounts      Account[]
+  id              String           @id @default(cuid())
+  name            String?
+  email           String?          @unique
+  numberOfUnits   Int?
+  phoneNumber     String?
+  password        String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  emailVerified   Boolean
+  image           String?
+  sessions        Session[]
+  accounts        Account[]
+  AIConfiguration AIConfiguration?
 
   @@map("user")
 }
 
 model AIConfiguration {
   id           String   @id @default(cuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   announcement String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt

@@ -9,6 +9,7 @@ import type { PersonalinfoFormValues } from '../types'
 export function PersonalInformation() {
 	const {
 		register,
+		setValue,
 		formState: { errors },
 	} = useFormContext<PersonalinfoFormValues>()
 
@@ -36,7 +37,17 @@ export function PersonalInformation() {
 			</div>
 			<div className="space-y-2">
 				<Label htmlFor={register('numberOfUnits').name}>Number of Units</Label>
-				<Input {...register('numberOfUnits')} onBlur={saveData} />
+				<Input
+					{...register('numberOfUnits')}
+					type="number"
+					onChange={(e) => {
+						const val = Number(e.target.value)
+						if (!Number.isNaN(val)) {
+							setValue('numberOfUnits', val)
+						}
+					}}
+					onBlur={saveData}
+				/>
 				{errors.numberOfUnits && (
 					<span className="text-sm text-destructive">
 						{errors.numberOfUnits.message}

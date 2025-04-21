@@ -18,4 +18,17 @@ export const auth = betterAuth({
 			create: {},
 		},
 	},
+	user: {
+		additionalFields: {
+			phoneNumber: {
+				type: 'string',
+				fieldName: 'phoneNumber',
+			},
+			numberOfUnits: {
+				type: 'number',
+				fieldName: 'numberOfUnits',
+				nullable: true,
+			},
+		},
+	},
 })

@@ -5,11 +5,12 @@ import { Form } from '@/components/ui/form'
 import { Separator } from '@/components/ui/separator'
 import { onboardingAtom } from '@/lib/atoms'
 import { cn } from '@/lib/utils'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { defineStepper } from '@stepperize/react'
 import { useAtom } from 'jotai'
-import { RESET } from 'jotai/utils'
 import React from 'react'
 import { useForm } from 'react-hook-form'
+import { saveData } from '../action'
 import { configureSchema, personalInfoSchema } from '../schemas'
 import type { FormValues } from '../types'
 import { ConfigurationForm } from './ConfigurationForm'
@@ -30,14 +31,16 @@ export const Stepper = () => {
 			step: stepper.current.id,
 			...savedData,
 		},
+		resolver: zodResolver(stepper.current.schema),
 	})
 
 	const currentIndex = utils.getIndex(stepper.current.id)
 
 	const onSubmit = async (values: FormValues) => {
 		setSavedData(values)
-		if (values.step === 'personalInfo') {
-			stepper.next()
+
+		if (stepper.isLast) {
+			saveData(values)
 		} else {
 			stepper.next()
 		}
@@ -48,10 +51,10 @@ export const Stepper = () => {
 			<Form {...form}>
 				<form
 					onSubmit={form.handleSubmit(onSubmit)}
-					className="space-y-6 p-6 border rounded-lg w-[450px] h-[450px]"
+					className="space-y-6 p-6 border rounded-lg w-[450px] h-full"
 				>
 					<div className="flex justify-between">
-						<h2 className="text-lg font-medium">Onboarding</h2>
+						<h2 className="text-lg font-medium">Onboarding </h2>
 						<div className="flex items-center gap-2">
 							<span className="text-sm text-muted-foreground">
 								Step {currentIndex + 1} of {steps.length}
@@ -110,13 +113,7 @@ export const Stepper = () => {
 								</Button>
 							</div>
 						) : (
-							<Button
-								onClick={() => {
-									setSavedData(RESET)
-								}}
-							>
-								Finish Onboarding
-							</Button>
+							<Button type="submit">Finish Onboarding</Button>
 						)}
 					</div>
 				</form>
