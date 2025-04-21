@@ -17,17 +17,28 @@ export default function CredentialsForm() {
 		const formData = new FormData(e.currentTarget)
 		const email = formData.get('email') as string
 		const password = formData.get('password') as string
+		const confirmPassword = formData.get('confirmPassword') as string
 
-		try {
-			await authClient.signIn.email({
+		if (password !== confirmPassword) {
+			setError('Passwords do not match')
+			setIsLoading(false)
+			return
+		}
+
+		await authClient.signUp.email(
+			{
 				email,
 				password,
-			})
-		} catch (err) {
-			setError('Invalid email or password')
-		} finally {
-			setIsLoading(false)
-		}
+				name: '',
+			},
+			{
+				onError: ({ error }) => {
+					if (error.code === 'PASSWORD_TOO_SHORT')
+						setError('Password must be at least 8 characters long')
+					setIsLoading(false)
+				},
+			},
+		)
 	}
 
 	return (
@@ -53,9 +64,20 @@ export default function CredentialsForm() {
 					disabled={isLoading}
 				/>
 			</div>
+
+			<div className="space-y-2">
+				<Label htmlFor="confirmPassword">Confirm Password</Label>
+				<Input
+					id="confirmPassword"
+					name="confirmPassword"
+					type="password"
+					required
+					disabled={isLoading}
+				/>
+			</div>
 			{error && <p className="text-sm text-red-500">{error}</p>}
 			<Button type="submit" className="w-full" disabled={isLoading}>
-				{isLoading ? 'Signing in...' : 'Sign in'}
+				{isLoading ? 'Signing up...' : 'Sign up'}
 			</Button>
 		</form>
 	)

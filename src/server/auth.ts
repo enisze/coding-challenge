@@ -9,12 +9,13 @@ export const auth = betterAuth({
 	emailAndPassword: {
 		enabled: true,
 		autoSignIn: true,
+		requireEmailVerification: false,
+		minPasswordLength: 2,
 	},
 	secret: process.env.JWT_SECRET,
 	databaseHooks: {
 		user: {
-			create: {
-			},
+			create: {},
 		},
 	},
 })
