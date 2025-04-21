@@ -4,26 +4,44 @@ import { Button } from '@/components/ui/button'
 import { Form } from '@/components/ui/form'
 import { Separator } from '@/components/ui/separator'
 import { onboardingAtom } from '@/lib/atoms'
+import { signOut } from '@/lib/auth-client'
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { defineStepper } from '@stepperize/react'
 import { useAtom } from 'jotai'
-import React from 'react'
+import { redirect } from 'next/navigation'
+import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 import { saveData } from '../action'
 import { configureSchema, personalInfoSchema } from '../schemas'
 import type { FormValues } from '../types'
 import { ConfigurationForm } from './ConfigurationForm'
 import { PersonalInformation } from './PersonalInformation'
+import { SuccessScreen } from './SuccessScreen'
 
 const { useStepper, steps, utils } = defineStepper(
-	{ id: 'personalInfo', label: 'Personal Info', schema: personalInfoSchema },
-	{ id: 'configuration', label: 'Configuration', schema: configureSchema },
+	{
+		id: 'personalInfo',
+		label: 'Personal Info',
+		schema: personalInfoSchema,
+	},
+	{
+		id: 'configuration',
+		label: 'Configuration',
+		schema: configureSchema,
+	},
 )
+
+const combinedSchema = z.discriminatedUnion('step', [
+	personalInfoSchema.extend({ step: z.literal('personalInfo') }),
+	configureSchema.extend({ step: z.literal('configuration') }),
+])
 
 export const Stepper = () => {
 	const stepper = useStepper()
 	const [savedData, setSavedData] = useAtom(onboardingAtom)
+	const [isSuccess, setIsSuccess] = useState(false)
 
 	const form = useForm<FormValues>({
 		mode: 'onTouched',
@@ -31,23 +49,45 @@ export const Stepper = () => {
 			step: stepper.current.id,
 			...savedData,
 		},
-		resolver: zodResolver(stepper.current.schema),
+		resolver: zodResolver(combinedSchema),
 	})
+
+	const values = form.watch()
 
 	const currentIndex = utils.getIndex(stepper.current.id)
 
-	const onSubmit = async (values: FormValues) => {
+	const onSubmit = async () => {
 		setSavedData(values)
 
 		if (stepper.isLast) {
-			saveData(values)
+			await saveData(values)
+			setIsSuccess(true)
 		} else {
 			stepper.next()
 		}
 	}
 
+	if (isSuccess) {
+		return <SuccessScreen />
+	}
+
 	return (
-		<div className="min-h-screen w-full flex items-center justify-center">
+		<div className="relative min-h-screen w-full flex items-center justify-center">
+			<Button
+				onClick={() => {
+					signOut({
+						fetchOptions: {
+							onSuccess: () => {
+								redirect('/signUp')
+							},
+						},
+					})
+				}}
+				className="absolute top-4 right-4"
+			>
+				Sign Out
+			</Button>
+
 			<Form {...form}>
 				<form
 					onSubmit={form.handleSubmit(onSubmit)}

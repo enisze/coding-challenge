@@ -23,11 +23,12 @@ export const auth = betterAuth({
 			phoneNumber: {
 				type: 'string',
 				fieldName: 'phoneNumber',
+				required: false,
 			},
 			numberOfUnits: {
 				type: 'number',
 				fieldName: 'numberOfUnits',
-				nullable: true,
+				required: false,
 			},
 		},
 	},

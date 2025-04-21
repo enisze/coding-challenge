@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { authClient } from '@/lib/auth-client'
+import { redirect } from 'next/navigation'
 import { useState } from 'react'
 
 export default function CredentialsForm() {
@@ -36,6 +37,9 @@ export default function CredentialsForm() {
 					if (error.code === 'PASSWORD_TOO_SHORT')
 						setError('Password must be at least 8 characters long')
 					setIsLoading(false)
+				},
+				onSuccess: () => {
+					redirect('/onboarding')
 				},
 			},
 		)
