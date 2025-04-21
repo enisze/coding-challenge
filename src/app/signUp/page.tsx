@@ -1,8 +1,7 @@
-import { Card } from '@/components/ui/card'
-import CredentialsForm from './CredentialsForm'
+import { Card } from "@/components/ui/card";
+import CredentialsForm from "./CredentialsForm";
 
 export default function SignInPage() {
-
 	return (
 		<div className="min-h-screen flex items-center justify-center">
 			<Card className="w-full max-w-md p-6 space-y-6">
@@ -12,9 +11,9 @@ export default function SignInPage() {
 				</div>
 
 				<div className="space-y-4">
-							<CredentialsForm />
+					<CredentialsForm />
 				</div>
 			</Card>
 		</div>
-	)
+	);
 }
