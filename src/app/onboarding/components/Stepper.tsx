@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { defineStepper } from '@stepperize/react'
 import { useAtom } from 'jotai'
+import { RESET } from 'jotai/utils'
 import { redirect } from 'next/navigation'
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -61,6 +62,7 @@ export const Stepper = () => {
 
 		if (stepper.isLast) {
 			await saveData(values)
+			setSavedData(RESET)
 			setIsSuccess(true)
 		} else {
 			stepper.next()

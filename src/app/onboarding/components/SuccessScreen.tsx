@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import { signOut } from '@/lib/auth-client'
 import Link from 'next/link'
 
 export function SuccessScreen() {
@@ -13,7 +14,14 @@ export function SuccessScreen() {
 				</h2>
 				<div className="flex justify-center">
 					<Button asChild>
-						<Link href="/">Zum Dashboard</Link>
+						<Link
+							href="/"
+							onClick={() => {
+								signOut()
+							}}
+						>
+							Zum Dashboard
+						</Link>
 					</Button>
 				</div>
 			</Card>
